@@ -9,16 +9,22 @@ class AgentScaffolder:
         with open(self.structure_file, 'r') as file:
             lines = file.readlines()
 
-        current_path = ""
+        stack = [self.destination]
+
         for line in lines:
             stripped_line = line.strip()
-            indent_level = (len(line) - len(stripped_line)) // 4
+            if stripped_line.startswith('├── ') or stripped_line.startswith('│   ├── '):
+                stripped_line = stripped_line.replace('├── ', '').replace('│   ', '')
+
+            if stripped_line.startswith('│   └── ') or stripped_line.startswith('└── '):
+                stripped_line = stripped_line.replace('└── ', '').replace('│   ', '')
 
             if stripped_line.endswith('/'):
-                current_path = os.path.join(self.destination, stripped_line.rstrip('/'))
-                os.makedirs(current_path, exist_ok=True)
+                dir_path = os.path.join(stack[-1], stripped_line.rstrip('/'))
+                os.makedirs(dir_path, exist_ok=True)
+                stack.append(dir_path)
             else:
-                file_path = os.path.join(current_path, stripped_line)
+                file_path = os.path.join(stack[-1], stripped_line)
                 os.makedirs(os.path.dirname(file_path), exist_ok=True)
                 with open(file_path, 'w') as f:
                     f.write(f"# This is a placeholder for {stripped_line}")

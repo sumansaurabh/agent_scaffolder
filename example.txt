@@ -1,0 +1,11 @@
+agent_scaffolder/
+├── agent_scaffolder/
+│   ├── __init__.py
+│   ├── creator.py
+├── tests/
+│   ├── __init__.py
+│   ├── test_creator.py
+├── pyproject.toml
+├── README.md
+├── LICENSE
+├── .gitignore
