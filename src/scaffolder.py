@@ -8,16 +8,20 @@ class AgentScaffolder:
     def create_project_structure(self):
         with open(self.structure_file, 'r') as file:
             lines = file.readlines()
-            for line in lines:
-                path = line.strip()
-                if path:
-                    full_path = os.path.join(self.destination, path)
-                    if path.endswith('/'):
-                        os.makedirs(full_path, exist_ok=True)
-                    else:
-                        os.makedirs(os.path.dirname(full_path), exist_ok=True)
-                        with open(full_path, 'w') as f:
-                            f.write("# This is a placeholder for {}".format(path))
+
+        current_path = ""
+        for line in lines:
+            stripped_line = line.strip()
+            indent_level = (len(line) - len(stripped_line)) // 4
+
+            if stripped_line.endswith('/'):
+                current_path = os.path.join(self.destination, stripped_line.rstrip('/'))
+                os.makedirs(current_path, exist_ok=True)
+            else:
+                file_path = os.path.join(current_path, stripped_line)
+                os.makedirs(os.path.dirname(file_path), exist_ok=True)
+                with open(file_path, 'w') as f:
+                    f.write(f"# This is a placeholder for {stripped_line}")
 
         print(f"Project structure created at '{self.destination}'")
 
